@@ -1,40 +1,41 @@
 <template>
-  <v-card class="my-3" hover>
-    <v-img
-      height="400px"
-      class="white--text"
-      :src="post.imgUrl"
-    >
-      <v-container fill-height fluid>
-        <v-layout>
-          <v-flex xs12 align-end d-flex>
-            <span class="headline">{{ post.title }}</span>
-          </v-flex>
-        </v-layout>
-      </v-container>
-    </v-img>
-    <v-card-text>
-      {{ post.content }}
-    </v-card-text>
-    <v-card-actions>
-      <v-btn icon class="red--text">
-        <v-icon medium>fa-reddit</v-icon>
-      </v-btn>
-      <v-btn icon class="light-blue--text">
-        <v-icon medium>fa-twitter</v-icon>
-      </v-btn>
-      <v-btn icon class="blue--text text--darken-4">
-        <v-icon medium>fa-facebook</v-icon>
-      </v-btn>
-      <v-spacer></v-spacer>
-      <v-btn flat class="blue--text">Read More</v-btn>
-    </v-card-actions>
-  </v-card>
+  <div class="news-feed">
+    <v-progress-circular
+      v-if="$apollo.queries.posts.loading"
+      indeterminate
+      size="60" />
+    <Post
+      v-for="post in posts"
+      :post="post"
+      :key="post.id" />
+  </div>
 </template>
 
 <script>
+import { getAllPosts } from '../graphql/queries.js'
+import Post from './Post'
+
 export default {
   name: 'NewsFeed',
-  props: ['post']
+  components: {
+    Post
+  },
+  apollo: {
+    posts: getAllPosts
+  },
+  data () {
+    return {
+      posts: []
+    }
+  }
 }
 </script>
+
+<style scoped>
+  .news-feed {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+</style>

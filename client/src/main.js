@@ -2,6 +2,7 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
 import Vuetify from 'vuetify'
+import apolloProvider from './graphql'
 import App from './App'
 import router from './router'
 import store from './store'
@@ -16,6 +17,7 @@ new Vue({
   el: '#app',
   router,
   store,
+  apolloProvider,
   components: { App },
   template: '<App/>'
 })

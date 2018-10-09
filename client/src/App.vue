@@ -2,13 +2,13 @@
   <v-app id="app">
     <v-app>
       <v-content>
-        <v-container>
-          <v-layout row wrap align-center>
+        <v-container class="full-height">
+          <v-layout row wrap align-center class="contain-in-full-height">
             <v-flex xs12 md4>
-              <Hero :userProfile="userProfile" />
+              <Hero />
             </v-flex>
             <v-flex xs12 md5 offset-md2>
-              <NewsFeed v-for="post in posts" :key="post.id" :post="post"/>
+              <NewsFeed />
             </v-flex>
           </v-layout>
         </v-container>
@@ -18,7 +18,6 @@
 </template>
 
 <script>
-import * as mockData from './utils/mockData.js'
 import Hero from './components/Hero'
 import NewsFeed from './components/NewsFeed'
 
@@ -30,9 +29,7 @@ export default {
   },
   data () {
     return {
-      title: 'Your Logo',
-      userProfile: mockData.userProfile,
-      posts: mockData.posts
+      title: 'Your Logo'
     }
   }
 }
@@ -41,4 +38,5 @@ export default {
 <style>
 @import "https://fonts.googleapis.com/css?family=Roboto:300,700|Material+Icons";
 @import "vuetify/dist/vuetify.min.css";
+
 </style>

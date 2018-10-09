@@ -1,19 +1,19 @@
 <template>
-  <div class="text-xs-center" style="position: fixed; top: 50px;">
+  <div class="text-xs-center sticky-half">
     <v-avatar size="125px">
       <img
         class="img-circle elevation-7 mb-1"
-        :src="userProfile.imageURL"
+        :src="user.imageURL"
       >
     </v-avatar>
     <div class="headline">
-      {{userProfile.firstName}}
+      {{user.firstName}}
       <span style="font-weight:bold">
-        {{userProfile.lastName}}
+        {{user.lastName}}
       </span>
     </div>
     <div class="subheading text-xs-center grey--text pt-1 pb-3">
-      {{userProfile.description}}
+      {{user.description}}
     </div>
     <v-layout justify-space-between>
       <a href="javascript:;" class="body-2">Home</a>
@@ -25,8 +25,29 @@
 </template>
 
 <script>
+import { getUser } from '../graphql/queries.js'
+
 export default {
   name: 'Hero',
-  props: ['userProfile']
+  data () {
+    return {
+      user: {}
+    }
+  },
+  apollo: {
+    user: {
+      query: getUser,
+      variables: {
+        id: 1
+      }
+    }
+  }
 }
 </script>
+
+<style scoped>
+  .sticky-half {
+    position: fixed;
+    top: calc(50% - 60px);
+  }
+</style>
