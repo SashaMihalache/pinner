@@ -1,9 +1,22 @@
 
+import DataLoader from 'dataloader';
+import { dataLoaderMongoose } from 'dataloader-mongoose';
 import { Types } from 'mongoose';
 import Post from '../models/Post';
 import User from '../models/User';
 import Comment from '../models/Comment';
 import Stat from '../models/Stat';
+
+const getUsersById = async (ids) => {
+    //mongoose dataloader wrapper
+    // wraps user model in order to return an array of promises
+    // behind (i guess) is just [User.find({ _id: { $in: ids })] or smth like that
+    return await dataLoaderMongoose(User, ids);
+}
+
+export const dataloaders = () => ({
+    userById: new DataLoader(getUsersById)
+})
 
 export const resolvers = {
     Query: {
@@ -15,7 +28,10 @@ export const resolvers = {
         comment: (root, { id }) => Comment.findById(id)
     },
     Post: {
-        Author: (post) => User.findById(post.authorId),
+        // Author: (post) => User.findById(post.authorId),
+        Author: async (post, _, context) => {
+            return await context.dataloaders.userById.load(post.authorId)
+        },
         Stats: async (post) => Stat.findOne({ postId: post.id }),
         Comments: (post) => Comment.find({ postId: post.id })
     },
@@ -34,8 +50,8 @@ export const resolvers = {
                 content,
                 imageURL
             };
-            const newPost = await Post.create(payload);
 
+            const newPost = await Post.create(payload);
             const postId = newPost.id;
 
             const stat = await Stat.create({ postId });
@@ -122,7 +138,7 @@ export const comments = [
     { id: 3, text: 'Ce tare', authorId: 1, postId: 2 },
 ]
 
-function getMaxId(arr) {
+function getMaxId (arr) {
     const nextId = arr.reduce((id, item) => {
         return Math.max(id, item.id);
     }, -1) + 1;

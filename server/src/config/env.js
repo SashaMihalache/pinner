@@ -6,6 +6,8 @@ import {
 import morgan from 'morgan'
 import cors from 'cors'
 import bodyParser from 'body-parser'
+import { dataloaders } from "../graphql/resolvers";
+
 
 import { schema } from '../graphql/schema';
 
@@ -31,7 +33,10 @@ function setDevEnv (app) {
 
   // GraphQL
   app.use('/graphql', bodyParser.json(), graphqlExpress({
-    schema
+    schema,
+    context: {
+      dataloaders: dataloaders()
+    }
   }))
   app.use('/graphiql', graphiqlExpress({
     endpointURL: '/graphql'

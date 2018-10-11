@@ -4,12 +4,14 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "nodemon src/app.js --watch src --exec babel-node"
+    "start": "nodemon src/app.js --watch src --exec babel-node",
+    "debug": "nodemon src/app.js --watch src --exec babel-node --inspect --debug-brk"
   },
   "dependencies": {
     "body-parser": "^1.18.3",
     "cors": "^2.8.4",
     "dataloader": "^1.4.0",
+    "dataloader-mongoose": "^0.0.2",
     "express": "^4.16.3",
     "graphql": "^14.0.2",
     "graphql-server-express": "^1.4.0",
