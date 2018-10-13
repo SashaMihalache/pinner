@@ -1,21 +1,34 @@
 import express from 'express'
-import { registerRoutes } from './router'
+// import {
+//   graphqlExpress,
+//   graphiqlExpress
+// } from 'graphql-server-express';
 import { setEnvironment } from './config/env'
-import { connectToDB } from './config/db'
+import { setGraphQL } from './config/graphqlServer';
+import { registerRoutes } from './router'
+// import { connectToDB } from './config/db'
+// import { schema } from './graphql/schema';
+// import { dataloaders } from "./graphql/resolvers";
 
-const app = express()
-const PORT = process.env.PORT || 3000;
+const init = async () => {
 
-setEnvironment(app)
-connectToDB()
-registerRoutes(app)
+  const app = express()
+  const PORT = process.env.PORT || 3000;
 
-app.get('/', (req, res) => {
-  if (process.env.NODE_ENV !== 'production') {
-    return res.send('Running server in development mode.')
-  } else {
-    return res.sendFile('index.html', { root: __dirname + '/../dist' })
-  }
-})
+  await setEnvironment(app)
+  await setGraphQL(app);
+  registerRoutes(app)
 
-app.listen(PORT, () => console.log(`Pinner app listening on port ${PORT}! in ${process.env.NODE_ENV} mode`))
+  app.get('/', (req, res) => {
+    if (process.env.NODE_ENV !== 'production') {
+      return res.send('Running server in development mode.')
+    } else {
+      return res.sendFile('index.html', { root: __dirname + '/../dist' })
+    }
+  })
+
+  app.listen(PORT, () => console.log(`Pinner app listening on port ${PORT}! in ${process.env.NODE_ENV} mode`))
+
+}
+
+init();

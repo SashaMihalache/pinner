@@ -1,4 +1,8 @@
-export function index (req, res) {
+export async function index (req, res) {
   console.log('HelloController')
-  return res.status(200).json({ message: 'Hello world from Express BE' })
+
+  // const db = req.app.locals.db;
+  // const posts = await db.collection('posts').find({}).toArray();
+
+  return res.status(200).send(posts)
 }

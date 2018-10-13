@@ -1,36 +1,62 @@
 
 import DataLoader from 'dataloader';
-import { dataLoaderMongoose } from 'dataloader-mongoose';
 import { Types } from 'mongoose';
+import { ObjectID } from 'mongodb';
 import Post from '../models/Post';
 import User from '../models/User';
 import Comment from '../models/Comment';
 import Stat from '../models/Stat';
 
-const getUsersById = async (ids) => {
-    //mongoose dataloader wrapper
-    // wraps user model in order to return an array of promises
-    // behind (i guess) is just [User.find({ _id: { $in: ids })] or smth like that
-    return await dataLoaderMongoose(User, ids);
+const prepare = (o) => {
+    o._id = o._id.toString()
+    return o;
 }
 
-export const dataloaders = () => ({
-    userById: new DataLoader(getUsersById)
+async function getUsersById (Users, ids) {
+    return (await Users.find({ _id: { $in: ids } }).toArray()).map(prepare);
+}
+
+// const getUsersById = mongo => (ids) => {
+//     console.log(mongo, ids);
+//     //mongoose dataloader wrapper
+//     // wraps user model in order to return an array of promises
+//     // behind (i guess) is just [User.find({ _id: { $in: ids })] or smth like that
+//     // return await dataLoaderMongoose(User, ids);
+//     return await mongo.Users.find({}).toArray();
+// }
+
+export const dataloaders = ({ Users }) => ({
+    userById: new DataLoader(
+        keys => getUsersById(Users, keys),
+        { cacheKeyFn: key => key.toString() }
+    )
 })
 
 export const resolvers = {
     Query: {
-        posts: () => Post.find({}),
-        post: (root, { id }) => Post.findById(id),
-        users: () => User.find({}),
-        user: (root, { id }) => User.findById(id),
-        comments: () => Comment.find({}),
-        comment: (root, { id }) => Comment.findById(id)
+        posts: async (root, _, { mongo: { Posts } }) => {
+            return (await Posts.find({}).toArray()).map(prepare)
+        },
+        post: async (root, { id }, { mongo: { Posts } }) => {
+            return prepare(await Posts.findOne(ObjectID(id)))
+        },
+        users: async (root, _, { mongo: { Users } }) => {
+            return (await Users.find({}).toArray()).map(prepare)
+        },
+        user: async (root, { id }, { mongo: { Users } }) => {
+            return prepare(await Users.findOne(ObjectID(id)))
+        },
+        comments: async (root, _, { mongo: { Comments } }) => {
+            return (await Comments.find({}).toArray()).map(prepare)
+        },
+        comment: async (root, { id }, { mongo: { Comments } }) => {
+            return prepare(await Comments.findOne(ObjectID(id)))
+        }
     },
     Post: {
         // Author: (post) => User.findById(post.authorId),
-        Author: async (post, _, context) => {
-            return await context.dataloaders.userById.load(post.authorId)
+        Author: async (post, _, { dataloaders }) => {
+            return await dataloaders.userById.load(post.authorId)
         },
         Stats: async (post) => Stat.findOne({ postId: post.id }),
         Comments: (post) => Comment.find({ postId: post.id })

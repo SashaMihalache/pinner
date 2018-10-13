@@ -3,7 +3,7 @@ import { resolvers } from './resolvers';
 
 const typeDefs = `
   type User {
-    id: ID!
+    _id: ID!
     firstName: String
     lastName: String
     fullName: String
@@ -13,7 +13,7 @@ const typeDefs = `
   }
 
   type Post {
-    id: ID!
+    _id: ID!
     title: String
     content: String
     imageURL: String
@@ -23,7 +23,7 @@ const typeDefs = `
   }
 
   type Stat {
-    id: ID!
+    _id: ID!
     views: Int
     likes: Int
     shares: Int
@@ -31,14 +31,14 @@ const typeDefs = `
   }
 
   type Comment {
-    id: ID!
+    _id: ID!
     text: String
     Author: User,
     Post: Post
   }
 
   type Notification {
-    id: ID
+    _id: ID
     date: Date
     type: String
   }
